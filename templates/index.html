@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QueryPilot AI — SQL Database Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===== HEADER ===== -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="icon-btn sidebar-toggle" id="sidebarToggle" aria-label="Toggle schema panel" title="Toggle schema panel">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div class="brand">
+        <span class="brand-mark">QP</span>
+        <div class="brand-text">
+          <span class="brand-name">QueryPilot <em>AI</em></span>
+          <span class="brand-sub">AI-Powered SQL Database Engineer</span>
+        </div>
+      </div>
+      <span class="db-pill" id="dbPill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="5" rx="8" ry="3" stroke="currentColor" stroke-width="1.6"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5" stroke="currentColor" stroke-width="1.6"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" stroke="currentColor" stroke-width="1.6"/></svg>
+        <span id="dbName">connecting…</span>
+      </span>
+    </div>
+
+    <div class="topbar-right">
+      <span class="status-indicator" id="connStatus" title="Checking connection…">
+        <span class="status-dot" id="connDot"></span>
+        <span id="connLabel">Checking…</span>
+      </span>
+      <button class="ghost-btn" id="newQueryBtn" title="Start a fresh conversation">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        New Query
+      </button>
+      <button class="ghost-btn" id="clearChatBtn" title="Clear the conversation">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Clear Chat
+      </button>
+      <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+        <svg id="themeIconMoon" width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="workspace">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-heading">
+          <span>Database</span>
+        </div>
+        <div class="sidebar-db-card" id="sidebarDbCard">
+          <div class="sidebar-db-name" id="sidebarDbName">—</div>
+          <div class="sidebar-db-meta" id="sidebarDbMeta">Loading schema…</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section sidebar-tables">
+        <div class="sidebar-heading">
+          <span>Tables</span>
+          <span class="count-badge" id="tableCount">0</span>
+        </div>
+        <div class="table-list" id="tableList">
+          <div class="schema-skeleton"></div>
+          <div class="schema-skeleton"></div>
+          <div class="schema-skeleton"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main-panel">
+
+      <div class="chat-scroll" id="chatScroll">
+        <div class="welcome-card" id="welcomeCard">
+          <div class="welcome-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.9L12 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="19" cy="18" r="2.2" stroke="currentColor" stroke-width="1.5"/></svg>
+          </div>
+          <h1>Ask your database anything</h1>
+          <p>QueryPilot reads your live MySQL schema, writes the SQL, runs it, and explains the result in plain language — reads, writes, and schema changes all included.</p>
+          <div class="example-chips" id="exampleChips">
+            <button class="chip">Who are the top 5 highest-paid employees?</button>
+            <button class="chip">Show everyone in the IT department</button>
+            <button class="chip">What's the average salary by department?</button>
+            <button class="chip">Add a new employee named Priya to Sales</button>
+          </div>
+        </div>
+        <!-- messages get appended here -->
+      </div>
+
+      <div class="composer">
+        <div class="composer-inner">
+          <textarea id="messageInput" placeholder="Ask your database anything…" rows="1"></textarea>
+          <button class="send-btn" id="sendBtn" aria-label="Send" title="Send">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 12l16-8-6 16-3-7-7-1z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="composer-hint">Enter to send · Shift+Enter for a new line</div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- message + result templates -->
+<template id="userMsgTemplate">
+  <div class="msg msg-user">
+    <div class="msg-bubble"></div>
+  </div>
+</template>
+
+<template id="aiMsgTemplate">
+  <div class="msg msg-ai">
+    <div class="msg-avatar">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.9L12 3z" fill="currentColor"/></svg>
+    </div>
+    <div class="msg-content">
+      <div class="msg-bubble msg-text"></div>
+      <div class="msg-extras"></div>
+    </div>
+  </div>
+</template>
+
+<script src="/static/script.js"></script>
+</body>
+</html>
